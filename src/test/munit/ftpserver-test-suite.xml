@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule
+	xmlns:ftpserver="http://www.mulesoft.org/schema/mule/ftpserver"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ftpserver http://www.mulesoft.org/schema/mule/ftpserver/current/mule-ftpserver.xsd">
+	<munit:config name="ftpserver-test-suite.xml"/>
+
+	<ftpserver:config name="MUnit_FTP_Server_Config">
+		<ftpserver:connection
+			port="${ftp.port}"
+			username="${ftp.user}"
+			password="${ftp.password}"
+			secure="true"
+			homeDir="${mule.home}"/>
+	</ftpserver:config>
+
+	<munit:test
+		name="listFlowTest"
+		description="Test listFlow (Expect success using MULE_HOME property)" tags="EXPECT-SUCCESS">
+		<munit:behavior >
+			<munit:set-event doc:name="Set Event" doc:id="29d634c6-4786-4b64-a9fe-27ac3940ade1" >
+				<munit:variables >
+					<munit:variable key="path" value="#[ Mule::p('mule.home') ]" encoding="UTF-8" mediaType="application/java" />
+				</munit:variables>
+
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref name="listFlow"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that
+				expression="#[sizeOf(payload)]"
+				is="#[MunitTools::greaterThan(0)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="listFlowTest_error" doc:id="958ada01-66be-4242-80d8-fc594fbbd65f" description="Test listFlow (Expect error without properly understand hy)" tags="EXPECT-ERROR" expectedErrorType="ANY">
+		<munit:behavior >
+			<munit:set-event doc:name="Set Event" doc:id="fcdc7b80-4db9-40b4-a796-d025baeb4d5a" >
+				<munit:variables >
+					<munit:variable key="path" value='#[ "" ]' encoding="UTF-8" mediaType="application/java" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref doc:name="Flow Reference" doc:id="79ecf141-ae8a-4dd0-bee9-1d2bfbbec900" name="listFlow" />
+		</munit:execution>
+	</munit:test>
+
+</mule>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule
+	xmlns:sftp="http://www.mulesoft.org/schema/mule/sftp"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+	<sftp:config name="SFTP_Config">
+		<sftp:connection
+			host="${ftp.host}"
+			port="${ftp.port}"
+			username="${ftp.user}"
+			password="${ftp.password}"/>
+	</sftp:config>
+
+	<configuration-properties file="ftp.properties"/>
+
+	<flow name="listFlow">
+		<logger
+			level="INFO"
+			doc:name="Logger"
+			doc:id="c404a7e8-7daf-4137-8237-8b77d6f39e0e"
+			message="${mule.home}"/>
+		<sftp:list
+			config-ref="SFTP_Config"
+			directoryPath='#[vars.path]'/>
+		<foreach>
+			<logger
+				level="INFO"
+				message="#[attributes.fileName]"/>
+		</foreach>
+	</flow>
+</mule>
