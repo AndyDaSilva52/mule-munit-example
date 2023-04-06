@@ -19,23 +19,45 @@ http://www.mulesoft.org/schema/mule/ftpserver http://www.mulesoft.org/schema/mul
 			port="${ftp.port}"
 			username="${ftp.user}"
 			password="${ftp.password}"
-			secure="true"
 			homeDir="${mule.home}"/>
 	</ftpserver:config>
 
+	<ftpserver:config
+		name="MUnit_SFTP_Server_Config"
+		doc:name="MUnit FTP Server Config"
+		doc:id="bccee179-ddf9-40c1-a933-2e362bd6a4c7">
+		<ftpserver:connection
+			port="${sftp.port}"
+			username="${sftp.user}"
+			password="${sftp.password}"
+			homeDir="${mule.home}"
+			secure="true"/>
+	</ftpserver:config>
+	<munit:before-test name="ftpserver-test-suiteBefore_Test" doc:id="ab291ec8-6168-4fb0-bbd2-db98b1ae351a" >
+		<munit-tools:assert-that doc:name="Assert that 'api.name' == munit-example-test" doc:id="01b4807f-8bce-4699-9c1a-73f958d20735" message="Before the test - Review the Configuration for env so the value pick the correct properties file from `src/test/resources/dev.properties`" expression="#[Mule::p('api.name')]" is="#[MunitTools::equalTo('munit-example-test')]"/>
+	</munit:before-test>
 	<munit:test
-		name="listFlowTest"
-		description="Test listFlow (Expect success using MULE_HOME property)" tags="EXPECT-SUCCESS">
-		<munit:behavior >
-			<munit:set-event doc:name="Set Event" doc:id="29d634c6-4786-4b64-a9fe-27ac3940ade1" >
-				<munit:variables >
-					<munit:variable key="path" value="#[ Mule::p('mule.home') ]" encoding="UTF-8" mediaType="application/java" />
+		name="listSFTP_FlowTest"
+		description="Test listFlow (Expect success using MULE_HOME property)"
+		tags="EXPECT-SUCCESS">
+		<munit:behavior>
+			<munit:set-event
+				doc:name="Set Event (vars path)"
+				doc:id="29d634c6-4786-4b64-a9fe-27ac3940ade1">
+				<munit:variables>
+					<munit:variable
+						key="path"
+						value="#[ Mule::p('mule.home') ]"
+						encoding="UTF-8"
+						mediaType="application/java"/>
 				</munit:variables>
 
 			</munit:set-event>
 		</munit:behavior>
 		<munit:execution>
-			<flow-ref name="listFlow"/>
+			<flow-ref
+				name="listSFTP_Flow"
+				doc:name="listSFTP_Flow"/>
 		</munit:execution>
 		<munit:validation>
 			<munit-tools:assert-that
@@ -43,17 +65,76 @@ http://www.mulesoft.org/schema/mule/ftpserver http://www.mulesoft.org/schema/mul
 				is="#[MunitTools::greaterThan(0)]"/>
 		</munit:validation>
 	</munit:test>
-	<munit:test name="listFlowTest_error" doc:id="958ada01-66be-4242-80d8-fc594fbbd65f" description="Test listFlow (Expect error without properly understand hy)" tags="EXPECT-ERROR" expectedErrorType="ANY">
-		<munit:behavior >
-			<munit:set-event doc:name="Set Event" doc:id="fcdc7b80-4db9-40b4-a796-d025baeb4d5a" >
+	<munit:test
+		name="listSFTP_FlowTest_error"
+		doc:id="958ada01-66be-4242-80d8-fc594fbbd65f"
+		description="Test listFlow (Expect error without properly understand hy)"
+		tags="EXPECT-ERROR"
+		expectedErrorType="ANY">
+		<munit:behavior>
+			<munit:set-event
+				doc:name="Set Event (vars path)"
+				doc:id="fcdc7b80-4db9-40b4-a796-d025baeb4d5a">
 				<munit:variables >
-					<munit:variable key="path" value='#[ "" ]' encoding="UTF-8" mediaType="application/java" />
+					<munit:variable key="path" value='#[ "./unknow-folder" ]' encoding="UTF-8" mediaType="application/java" />
 				</munit:variables>
 			</munit:set-event>
 		</munit:behavior>
 		<munit:execution>
-			<flow-ref doc:name="Flow Reference" doc:id="79ecf141-ae8a-4dd0-bee9-1d2bfbbec900" name="listFlow" />
+			<flow-ref
+				doc:name="listSFTP_Flow"
+				doc:id="79ecf141-ae8a-4dd0-bee9-1d2bfbbec900"
+				name="listSFTP_Flow"/>
 		</munit:execution>
 	</munit:test>
-
+	<munit:test
+		name="listFTP_FlowTest"
+		doc:id="c127bc23-335b-4a36-8da0-c09839d85db4"
+		description="Test listFlow (Expect success using MULE_HOME property)"
+		tags="EXPECT-SUCCESS">
+		<munit:behavior>
+			<munit:set-event
+				doc:name="Set Event (vars path)"
+				doc:id="161a2e34-b85b-42fe-aeb4-98561752e343">
+				<munit:variables >
+					<munit:variable key="path" value='#[ "./" ]' encoding="UTF-8" mediaType="application/java" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref
+				doc:name="listFTP_Flow"
+				doc:id="05c610c4-e9bc-4f61-a5d8-418287768e5b"
+				name="listFTP_Flow"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that
+				doc:name="Assert that"
+				doc:id="087ba385-c3af-4a15-be26-8f068a8fdfe6"
+				expression="#[sizeOf(payload)]"
+				is="#[MunitTools::greaterThan(0)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test
+		name="listFTP_FlowTest_error"
+		doc:id="ea1a2079-2d10-410d-abcf-8032c5bb55db"
+		description="Test listFlow (Expect error without properly understand hy)"
+		tags="EXPECT-ERROR"
+		expectedErrorType="ANY">
+		<munit:behavior>
+			<munit:set-event
+				doc:name="Set Event (vars path)"
+				doc:id="513df1f1-454c-441a-8dd3-3436697849e7">
+				<munit:variables >
+					<munit:variable key="path" value='#[ "./unknow-folder" ]' encoding="UTF-8" mediaType="application/java" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref
+				doc:name="listFTP_Flow"
+				doc:id="88b6a2a4-6916-447a-8ded-d70aa60e1627"
+				name="listFTP_Flow"/>
+		</munit:execution>
+	</munit:test>
 </mule>

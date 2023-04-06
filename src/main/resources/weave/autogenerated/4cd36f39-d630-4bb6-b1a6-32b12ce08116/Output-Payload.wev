@@ -1,0 +1,28 @@
+%dw 2.0
+
+type auto_4cd36f39_d630_4bb6_b1a6_32b12ce08116_Output_Payload = Array<org_mule_runtime_api_message_Message>
+type org_mule_runtime_api_message_Message = {|
+  payload: java_lang_Object, 
+  attributes: org_mule_extension_ftp_api_ftp_FtpFileAttributes
+|} {"typeId": "org.mule.runtime.api.message.Message"}
+type org_mule_extension_ftp_api_ftp_FtpFileAttributes = {|
+  timestamp?: DateTime {"typeId": "java.time.LocalDateTime"}, 
+  name: String, 
+  size: Number, 
+  regularFile?: Boolean {"typeId": "boolean"}, 
+  directory?: Boolean {"typeId": "boolean"}, 
+  symbolicLink?: Boolean {"typeId": "boolean"}, 
+  path: String, 
+  fileName: String
+|} {"typeAlias": "FtpFileAttributes",
+"typeId": "org.mule.extension.ftp.api.ftp.FtpFileAttributes"}
+
+
+type java_lang_Object = {|  |} {"typeAlias": "Object",
+"class": "java.lang.Object",
+"typeId": "java.lang.Object"}
+
+
+
+
+

@@ -131,6 +131,7 @@ output application/java
 ---
 {
 	app: {
+		env: Mule::p('env'),
 		name: Mule::p('name'),
 		'mule.home': Mule::p('mule.home')
 	}

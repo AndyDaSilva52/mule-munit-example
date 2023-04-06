@@ -1,24 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mule
+	xmlns:ftp="http://www.mulesoft.org/schema/mule/ftp"
 	xmlns:sftp="http://www.mulesoft.org/schema/mule/sftp"
 	xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="
-http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ftp http://www.mulesoft.org/schema/mule/ftp/current/mule-ftp.xsd">
 
 	<sftp:config name="SFTP_Config">
 		<sftp:connection
+			host="${sftp.host}"
+			port="${sftp.port}"
+			username="${sftp.user}"
+			password="${sftp.password}"/>
+	</sftp:config>
+
+	<configuration-properties file="dev.properties"/>
+
+	<ftp:config
+		name="FTP_Config"
+		doc:name="FTP Config"
+		doc:id="b01e46d8-3977-4d21-98bd-20dc0f0d3bb3">
+		<ftp:connection
 			host="${ftp.host}"
 			port="${ftp.port}"
 			username="${ftp.user}"
 			password="${ftp.password}"/>
-	</sftp:config>
-
-	<configuration-properties file="ftp.properties"/>
-
-	<flow name="listFlow">
+	</ftp:config>
+	
+	<flow name="listSFTP_Flow">
 		<logger
 			level="INFO"
 			doc:name="Logger"
@@ -30,7 +43,30 @@ http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sft
 		<foreach>
 			<logger
 				level="INFO"
-				message="#[attributes.fileName]"/>
+				message="#[attributes.fileName default attributes.name]"/>
+		</foreach>
+	</flow>
+	<flow
+		name="listFTP_Flow"
+		doc:id="4cd36f39-d630-4bb6-b1a6-32b12ce08116">
+		<logger
+			level="INFO"
+			doc:name="Logger"
+			doc:id="f31e5920-4bb2-40cd-b43f-2b2350b23bc0"
+			message="${mule.home}"/>
+		<ftp:list
+			doc:name="List"
+			doc:id="7e8875fc-e86d-40a0-b470-e3765814fd70"
+			config-ref="FTP_Config"
+			directoryPath='#[vars.path]'/>
+		<foreach
+			doc:name="For Each"
+			doc:id="a158d0b2-dd00-46b4-b84c-73519923047e">
+			<logger
+				level="INFO"
+				doc:name="Logger"
+				doc:id="ccb881ee-44b2-4270-9251-c3f89658e07a"
+				message="#[attributes.fileName default attributes.name]"/>
 		</foreach>
 	</flow>
 </mule>
